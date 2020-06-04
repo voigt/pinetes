@@ -18,4 +18,4 @@ spec:
   #
   valuesFrom:
   - externalSourceRef:
-      url: https://raw.githubusercontent.com/onedr0p/homelab-gitops/master/deployments/flux/flux/flux-values.yaml
+      url: https://raw.githubusercontent.com/voigt/pinetes/master/deployments/flux/flux/flux-values.yaml
