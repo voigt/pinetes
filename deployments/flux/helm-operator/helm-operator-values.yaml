@@ -14,3 +14,5 @@ prometheus:
     namespace: flux
     interval: 30s
     scrapeTimeout: 10s
+nodeSelector:
+  beta.kubernetes.io/arch: arm
