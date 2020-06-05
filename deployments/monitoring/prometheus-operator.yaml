@@ -409,7 +409,8 @@ spec:
         ## Define which Nodes the Pods are scheduled on.
         ## ref: https://kubernetes.io/docs/user-guide/node-selection/
         ##
-        nodeSelector: {}
+        nodeSelector:
+          beta.kubernetes.io/arch: amd64
 
         ## Define resources requests and limits for single Pods.
         ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
@@ -1224,7 +1225,8 @@ spec:
       ## Define which Nodes the Pods are scheduled on.
       ## ref: https://kubernetes.io/docs/user-guide/node-selection/
       ##
-      nodeSelector: {}
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
 
       ## Tolerations for use with node taints
       ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
