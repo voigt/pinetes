@@ -58,7 +58,7 @@ resource "aws_security_group" "ssh" {
   }
 }
 
-resource "aws_security_group" "outbound-all" {
+resource "aws_security_group" "vpn-outbound" {
   name        = "tf-outbound-all"
   description = "outbound-all"
 
@@ -93,3 +93,7 @@ resource "aws_security_group" "outbound-all" {
     Name = "allow-all-outbound"
   }
 }
+
+output "sg-vpn-inbound" { value = aws_security_group.vpn-inbound.id }
+output "sg-ssh" { value = aws_security_group.ssh.id }
+output "sg-vpn-outbound" { value = aws_security_group.vpn-outbound.id }
