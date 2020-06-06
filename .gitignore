@@ -1,2 +1,10 @@
+.env
 deployments/kube-system/machine-controller/userdata
 environment/aws/credentials
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
