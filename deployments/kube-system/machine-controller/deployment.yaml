@@ -1,0 +1,49 @@
+apiVersion: apps/v1 # Version may change based on kubernetes version
+kind: Deployment
+metadata:
+  name: machine-controller-manager
+  labels:
+    app: machine-controller-manager
+spec:
+  selector:
+    matchLabels:
+      app: machine-controller-manager
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: machine-controller-manager
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/arch: "arm"
+        node-role.kubernetes.io/master: "true"
+      volumes:
+      - name: kubeconfig
+        configMap:
+          name: mcm-config
+      containers:
+      - name: machine-controller-manager
+        image: voigt/machine-controller-manager:v0.29.0-arm
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: /.kube
+        command:
+          - ./machine-controller-manager
+          - --v=2
+          - --target-kubeconfig=/.kube/config # Mandatory Parameter - Filepath to the target cluster's kubeconfig where node objects are expected to join.
+          - --namespace=default # Optional Parameter - Default value for namespace is 'default' - The control namespace where the controller watches for it's machine objects.
+          - --machine-drain-timeout=5m # Optional Parameter - Timeout (in minutes) used while draining of machine before deletion, beyond which MCM forcefully deletes machine.
+          - --machine-health-timeout=100m  # Optional Parameter - Default value 10mins - Timeout (in minutes) used while joining (during creation) or re-joining (in case of temporary health issues) of machine before it is declared as failed.
+          - --machine-safety-orphan-vms-period=100m # Optional Parameter - Default value 30mins - Time period (in minutes) used to poll for orphan VMs by safety controller.
+          # - --node-conditions=ReadonlyFilesystem,KernelDeadlock,DiskPressure # List of comma-separated/case-sensitive node-conditions which when set to True will change machine to a failed state after MachineHealthTimeout duration. It may further be replaced with a new machine if the machine is backed by a machine-set object.
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10258
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5

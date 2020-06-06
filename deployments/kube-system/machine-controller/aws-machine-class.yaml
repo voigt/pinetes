@@ -1,0 +1,25 @@
+apiVersion: machine.sapcloud.io/v1alpha1
+kind: AWSMachineClass
+metadata:
+  name: test-aws # Name of aws machine class goes here
+  namespace: default # Namespace in which the machine class is to be deployed
+spec:
+  secretRef: # Secret pointing to a secret which contains the provider secret and cloudconfig
+    namespace: default  # Namespace
+    name: aws-secret # Name of the secret
+  ami: ami-0e342d72b12109f91 # Amazon machine image name goes here
+  region: eu-central-1 # Region in which machine is to be deployed
+  machineType: t2.micro # Type of ec2 machine
+  iam:
+    name: k3s-ec2-machine-controller # Name of the AWS Identity and Access Management
+  keyName: k3s # EC2 keypair used to access ec2 machine
+  networkInterfaces:
+    - subnetID: subnet-770bae1d # The subnetID in which machine is to be deployed
+      securityGroupIDs: ["sg-605d3602", "sg-0e8078886ea53845f", "sg-0cb9ca57541458b94"] # The security groups to which it is attached to
+  tags:
+    Name: test-machine # Name tag that can be used to identify a machine at AWS
+    kubernetes.io/cluster/k3s: "1" # This is mandatory as the safety controller uses this tag to identify VMs created by this controller.
+    kubernetes.io/role/cloud-worker: "1" # This is mandatory as the safety controller uses this tag to identify VMs created by by this controller.
+    beta.kubernetes.io/instance-type: "k3s"
+    cloud: aws
+    cluster: k3s

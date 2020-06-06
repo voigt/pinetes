@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+
+API_SERVER="https://<tailscale-ip of api server>:6443"
+API_TOKEN="<k3s api token>"
+TAILSCALE_AUTH_KEY="<tailscale auth key>"
+
+# Install Tailscale (From Unstable)
+# https://pkgs.tailscale.com/unstable/
+function install_tailscale {
+  curl -s https://pkgs.tailscale.com/unstable/ubuntu/bionic.gpg | apt-key add -
+  sleep 2
+  curl -s https://pkgs.tailscale.com/unstable/ubuntu/bionic.list | tee /etc/apt/sources.list.d/tailscale.list 
+  sleep 2
+  apt-get update
+  sleep 2
+  apt-get install tailscale
+  sleep 2
+}
+
+function join_tailscale {
+  tailscale up --authkey "$1"
+  sleep 5
+}
+
+function install_k3s {
+  TAILSCALE_IP=$(ip -4 addr show tailscale0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+
+  die() { status=$1; shift; echo "FATAL: $*"; exit $status; }
+  EC2_INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id || die \"curl instance-id has failed: $?\")
+  EC2_AVAIL_ZONE=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone || die \"curl availability zone has failed: $?\")
+  EC2_INTERNAL_DNS=$(curl -s http://169.254.169.254/latest/meta-data/local-hostname || die \"curl internal dns has failed: $?\")
+  EC2_REGION=$(echo "${EC2_AVAIL_ZONE}" | sed 's/[a-z]$//')
+
+  curl -sfL https://get.k3s.io | \
+  K3S_NODE_NAME="${EC2_INTERNAL_DNS}" \
+  K3S_TOKEN="${API_TOKEN}" sh -s - agent \
+  --flannel-iface "tailscale0" \
+  --node-external-ip "${TAILSCALE_IP}" \
+  --server ${API_SERVER} \
+  --kubelet-arg="provider-id=aws:///${EC2_REGION}/${EC2_INSTANCE_ID}"
+}
+
+install_tailscale
+join_tailscale ${TAILSCALE_AUTH_KEY}
+install_k3s

@@ -1,0 +1,2 @@
+deployments/kube-system/machine-controller/userdata
+environment/aws/credentials
