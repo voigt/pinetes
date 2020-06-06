@@ -21,3 +21,11 @@ $ kubectl apply -f deployments/kube-system/machine-controller/deployment.yaml
 ```
 
 ## Deploy Machine-Class
+
+```bash
+$ kubectl create secret generic aws-secret \
+    --from-literal="providerAccessKeyId=$(cat environment/aws/credentials | head -n 1)" \
+    --from-literal="providerSecretAccessKey=$(cat environment/aws/credentials | head -n 2 | tail -n 1)" \
+    --from-file="userData=deployments/kube-system/machine-controller/userdata" -oyaml | kubectl apply -f -
+```
+
