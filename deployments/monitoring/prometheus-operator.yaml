@@ -488,6 +488,9 @@ spec:
     ## Using default values from https://github.com/helm/charts/blob/master/stable/grafana/values.yaml
     ##
     grafana:
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
+        
       enabled: true
 
       ## Deploy default dashboards.
