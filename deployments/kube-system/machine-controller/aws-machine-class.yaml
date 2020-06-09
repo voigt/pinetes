@@ -11,11 +11,11 @@ spec:
   region: eu-central-1 # Region in which machine is to be deployed
   machineType: t2.micro # Type of ec2 machine
   iam:
-    name: k3s-ec2-machine-controller # Name of the AWS Identity and Access Management
+    name: _k3s-ec2-machine-controller  # Name of the AWS Identity and Access Management
   keyName: k3s # EC2 keypair used to access ec2 machine
   networkInterfaces:
     - subnetID: subnet-770bae1d # The subnetID in which machine is to be deployed
-      securityGroupIDs: ["sg-605d3602", "sg-0e8078886ea53845f", "sg-0cb9ca57541458b94"] # The security groups to which it is attached to
+      securityGroupIDs: ["sg-605d3602","sg-0d38cb67357654db6","sg-031d3277d92fbfde3","sg-091e87e9a57cae1fc"] # The security groups to which it is attached to
   tags:
     Name: test-machine # Name tag that can be used to identify a machine at AWS
     kubernetes.io/cluster/k3s: "1" # This is mandatory as the safety controller uses this tag to identify VMs created by this controller.
